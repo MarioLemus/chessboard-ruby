@@ -16,4 +16,6 @@ Quit:
     $ctrl + c # quits the game instance 
 ```
 
-After executing the previous command a chessboard should be printede in your terminal with a basic set keep in mind that in this game you are limited to deliver the coordinates of the piece you want to move and its destiny coordinates, please completed every single prompt given
+After executing the previous command a chessboard should be printede in your terminal with a basic set keep in mind that in this game you are limited to deliver the coordinates of the piece you want to move and its destiny coordinates, please completed every single prompt given, until the game finished or you quited.
+
+**Good luck!**
