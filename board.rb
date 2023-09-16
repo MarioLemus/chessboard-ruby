@@ -40,10 +40,10 @@ class Board
     @board = {
       "8": [@b_rook.ascii, @b_knight.ascii, @b_bishop.ascii, @b_queen.ascii, @b_king.ascii, @b_bishop.ascii, @b_knight.ascii, @b_rook.ascii],
       "7": (@b_pawn.ascii * 8).split(''),
-      "6": Array.new(8, '0'),
-      "5": Array.new(8, '0'),
-      "4": Array.new(8, '0'),
-      "3": Array.new(8, '0'),
+      "6": Array.new(8, ' '),
+      "5": Array.new(8, ' '),
+      "4": Array.new(8, ' '),
+      "3": Array.new(8, ' '),
       "2": (@w_pawn.ascii * 8).split(''),
       "1": [@w_rook.ascii, @w_knight.ascii, @w_bishop.ascii, @w_queen.ascii, @w_king.ascii, @w_bishop.ascii, @w_knight.ascii, @w_rook.ascii],
       "-": ["a", "b", "c", "d", "e", "f", "g", "h"]
@@ -52,31 +52,27 @@ class Board
 
   def move_piece(from, to)
     extract_coordinates = lambda {|str, el| str.split('')[el]}
-    from_row = extract_coordinates.call(from, 1)
-    position_in_row = extract_coordinates.call(from, 0)
+    # old position
+    curr_row = extract_coordinates.call(from, 1)
+    position = extract_coordinates.call(from, 0)
     # new position
-    to_column = extract_coordinates.call(to, 1)
-    new_position_in_row = extract_coordinates.call(to, 0)
+    new_column = extract_coordinates.call(to, 1)
+    new_position = extract_coordinates.call(to, 0)
+    # transform column in indexes a, b, c -> 0, 1, 2
+    column_indexes = {a:0, b:1, c:2, d:3, e:4, f:5, g:6, h:7}
+    piece = @board[curr_row.to_sym][column_indexes[position.to_sym]]
 
-    # transformar la coordenada a, b, c -> 0, 1, 2
-    posiciones = {a:0, b:1, c:2, d:3, e:4, f:5, g:6, h:7}
-
-    # mover a la nueva posicion
-    piece_position = @board[from_row.to_sym][posiciones[position_in_row.to_sym]]
-    puts from_row
-    puts position_in_row
-
-
-    # actualiza mal
-    puts to_column
-    puts new_position_in_row
-
-
-
-    @board[to_column.to_sym][posiciones[new_position_in_row.to_sym]] = piece_position
-    @board[from_row.to_sym][posiciones[position_in_row.to_sym]] = "0"
-    render
     # comprobar si la casilla esta libre
+    curr_position = @board[new_column.to_sym][column_indexes[new_position.to_sym]]
+
+    if curr_position
+    end
+    # make the change
+    @board[new_column.to_sym][column_indexes[new_position.to_sym]] = piece
+    @board[curr_row.to_sym][column_indexes[position.to_sym]] = " "
+    # render board
+    render
+
     # aplicar reglas de movimiento
   end
 end
