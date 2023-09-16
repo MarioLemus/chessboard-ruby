@@ -51,9 +51,33 @@ class Board
   end
 
   def move_piece(from, to)
-    from_row = from.split('')[1]
-    position_in_row = from.split('')[0].to_i
-    puts @board[from_row.to_sym][position_in_row]
+    extract_coordinates = lambda {|str, el| str.split('')[el]}
+    from_row = extract_coordinates.call(from, 1)
+    position_in_row = extract_coordinates.call(from, 0)
+    # new position
+    to_column = extract_coordinates.call(to, 1)
+    new_position_in_row = extract_coordinates.call(to, 0)
+
+    # transformar la coordenada a, b, c -> 0, 1, 2
+    posiciones = {a:0, b:1, c:2, d:3, e:4, f:5, g:6, h:7}
+
+    # mover a la nueva posicion
+    piece_position = @board[from_row.to_sym][posiciones[position_in_row.to_sym]]
+    puts from_row
+    puts position_in_row
+
+
+    # actualiza mal
+    puts to_column
+    puts new_position_in_row
+
+
+
+    @board[to_column.to_sym][posiciones[new_position_in_row.to_sym]] = piece_position
+    @board[from_row.to_sym][posiciones[position_in_row.to_sym]] = "0"
+    render
+    # comprobar si la casilla esta libre
+    # aplicar reglas de movimiento
   end
 end
 
