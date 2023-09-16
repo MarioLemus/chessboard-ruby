@@ -41,7 +41,6 @@ class Main
       print 'to: '
       to = gets.chomp
       board.move_piece(from, to)
-      break
     end
 
     end
