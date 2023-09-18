@@ -13,17 +13,16 @@ module Pieces
   # peones
   public
   class Pawn < BasePiece
-      def initialize(player_color, ascii, valid_distance)
-          super(player_color, ascii, valid_distance)
-      end
-
+    def initialize(player_color, ascii, valid_distance)
+      super(player_color, ascii, valid_distance)
+    end
   end
 
   # alfil
   class Bishop < BasePiece
-      def initialize(player_color, ascii, valid_distance)
-          super(player_color, ascii, valid_distance)
-      end
+    def initialize(player_color, ascii, valid_distance)
+      super(player_color, ascii, valid_distance)
+    end
   end
 
   # caballero

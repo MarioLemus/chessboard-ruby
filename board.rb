@@ -3,17 +3,23 @@ class Board
     @score = {white: 0, black: 0}
     @turn = ''
     @board = {}
+    @EMPTY_SQUARE = "."
   end
 
   def render
+    side_row_id = 8
     # if board is not being played yet, set it
     if @board.length == 0
       set
     end
 
-    @board.each do |row|
+    @board.values().each do |row|
+      # print side numbers
+      print "#{side_row_id == 0 ? " " : side_row_id} "
+      side_row_id -= 1
+      # print row
       row.each do |el|
-        print "#{el} "
+        print "#{el == "." || ('a'..'h').include?(el) ? el : el.ascii} "
       end
       puts
     end
@@ -38,14 +44,14 @@ class Board
     @w_pawn = Pieces::Pawn.new(PLAYER_1, W_PAWN, 1)
 
     @board = {
-      "8": [@b_rook.ascii, @b_knight.ascii, @b_bishop.ascii, @b_queen.ascii, @b_king.ascii, @b_bishop.ascii, @b_knight.ascii, @b_rook.ascii],
-      "7": (@b_pawn.ascii * 8).split(''),
-      "6": Array.new(8, ' '),
-      "5": Array.new(8, ' '),
-      "4": Array.new(8, ' '),
-      "3": Array.new(8, ' '),
-      "2": (@w_pawn.ascii * 8).split(''),
-      "1": [@w_rook.ascii, @w_knight.ascii, @w_bishop.ascii, @w_queen.ascii, @w_king.ascii, @w_bishop.ascii, @w_knight.ascii, @w_rook.ascii],
+      "8": [@b_rook, @b_knight, @b_bishop, @b_queen, @b_king, @b_bishop, @b_knight, @b_rook],
+      "7": [@b_pawn, @b_pawn, @b_pawn, @b_pawn, @b_pawn, @b_pawn, @b_pawn, @b_pawn],
+      "6": Array.new(8, @EMPTY_SQUARE),
+      "5": Array.new(8, @EMPTY_SQUARE),
+      "4": Array.new(8, @EMPTY_SQUARE),
+      "3": Array.new(8, @EMPTY_SQUARE),
+      "2": [@w_pawn, @w_pawn, @w_pawn, @w_pawn, @w_pawn, @w_pawn, @w_pawn, @w_pawn],
+      "1": [@w_rook, @w_knight, @w_bishop, @w_queen, @w_king, @w_bishop, @w_knight, @w_rook],
       "-": ["a", "b", "c", "d", "e", "f", "g", "h"]
     }
   end
@@ -53,27 +59,67 @@ class Board
   def move_piece(from, to)
     extract_coordinates = lambda {|str, el| str.split('')[el]}
     # old position
-    curr_row = extract_coordinates.call(from, 1)
-    position = extract_coordinates.call(from, 0)
+    curr_y = extract_coordinates.call(from, 1)
+    curr_x = extract_coordinates.call(from, 0)
     # new position
-    new_column = extract_coordinates.call(to, 1)
-    new_position = extract_coordinates.call(to, 0)
+    new_y = extract_coordinates.call(to, 1)
+    new_x = extract_coordinates.call(to, 0)
     # transform column in indexes a, b, c -> 0, 1, 2
     column_indexes = {a:0, b:1, c:2, d:3, e:4, f:5, g:6, h:7}
-    piece = @board[curr_row.to_sym][column_indexes[position.to_sym]]
 
-    # comprobar si la casilla esta libre
-    curr_position = @board[new_column.to_sym][column_indexes[new_position.to_sym]]
+    # check its color to change turns
+    # check its valid movement distance
+    # generate a nested loop with valid coords, per piece
+    begin
+      @piece = @board[curr_y.to_sym][column_indexes[curr_x.to_sym]]
+      # check movement validity
+      if is_valid_movement?(curr_y, curr_x, new_y, new_x)
+        # make the change
+        @board[new_y.to_sym][column_indexes[new_x.to_sym]] = @piece
+        # update square with an empty space if the piece gets out of its original position
+        # update square with an empty space if the piece eats the enemy piece
+        @board[curr_y.to_sym][column_indexes[curr_x.to_sym]] = @EMPTY_SQUARE
+      end
 
-    if curr_position
+      # render board
+      render
+    rescue  NoMethodError => _
+      puts "\n\"(INVALID COORDINATES, TRY AGAIN!\")"
+      puts
+      render
+    rescue  TypeError => _
+      puts "\n\"(INVALID COORDINATES, TRY AGAIN!\")"
+      puts
+      render
     end
-    # make the change
-    @board[new_column.to_sym][column_indexes[new_position.to_sym]] = piece
-    @board[curr_row.to_sym][column_indexes[position.to_sym]] = " "
-    # render board
-    render
 
-    # aplicar reglas de movimiento
+
+    # change turn
+      # take the curr ascii representation
+      # create a nested for loop
+      # check every position
+      # if the ascii is similar to a piece of the same type (then invalid movement, except knight)
+  end
+
+  private
+  def is_valid_movement?(curr_y, curr_x, new_y, new_x)
+    # (plano y)
+    # 8
+    # 7
+    # -------
+    # (plano x) ->   a b c
+
+    # pawn (first movement) (move)
+    # [
+    #  up:curr "up 2 rows in same position"
+    #  up:curr
+    #  (attack) [up:curr-1][up:curr+1] (if the square is not empty)
+    # ]
+    if @piece.ascii.eql?(W_PAWN)
+      # board[y][x]
+      if @board[curr_y]
+    end
+    true
   end
 end
 
@@ -96,3 +142,52 @@ end
 
 # rey
 # se mueve en todas las casillas, una casilla a la vez (vertical, horizontal y diagonal)
+
+# definir regla de movimiento en codigo
+  # rook -> (a1, a8) (b1, b8) (c1, c8) (d1, d8) (e1, e8) (f1, f8) (g1, g8) (h1, h8)
+  # to detect up or down "use the curr coord in the upper/lower row"
+  # to detect left or right "use the curr coord and add/substract 1"
+  # to check if the given coords are valid "calc square distance between the given coords"
+  # to eat the piece "check the color of it"
+
+# rook
+  # [
+  #  up:curr(up row),
+  #  down:curr(down row),
+  #  left:curr-1,
+  #  right:curr+1
+  # ]
+# pawn (first movement) (move)
+  # [
+  #  up:curr "up 2 rows in same position"
+  #  up:curr
+  #  (attack) [up:curr-1][up:curr+1] (if the square is not empty)
+  # ]
+# queen, king
+  # [
+  #  up:curr
+  #  down:curr
+  #  left:curr-1
+  #  right:curr+2
+  #
+  #  up-left-diagonal:curr-1
+  #  up-right-diagonal:curr+1
+  #
+  #  down-left-diagonal:curr-1
+  #  down-right-diagonal:curr+1
+  # ]
+# knight
+  # [
+  #  up-left:curr(up 2 rows) -> curr-1
+  #  up-right:curr(up 2 rows) -> curr+1
+  #
+  #  down-left:curr(up 2 rows) -> curr-1
+  #  down-right:curr(up 2 rows) -> curr+1
+  # ]
+# bishop
+  # [
+  #  up-left: curr(selected row up)-1
+  #  up-right: curr(selected row up)+1
+  #  down-left: curr(selected row down)-1
+  #  down-right: curr(selected row down)+1
+  # ]

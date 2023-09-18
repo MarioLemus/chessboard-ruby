@@ -1,5 +1,6 @@
 PLAYER_1 = 'w'.freeze
 PLAYER_2 = 'b'.freeze
+
 # white
 B_KING = "\u2654"
 B_QUEEN = "\u2655"
